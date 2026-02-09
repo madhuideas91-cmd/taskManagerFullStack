@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root {
+  --app-density-padding: 1rem;
+}
+
+.app-density {
+  padding: var(--app-density-padding);
+}
+

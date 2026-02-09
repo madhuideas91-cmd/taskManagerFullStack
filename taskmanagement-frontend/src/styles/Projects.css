@@ -1,0 +1,61 @@
+/* ============================= */
+/* 📱 MOBILE (max-width: 640px) */
+/* ============================= */
+@media (max-width: 640px) {
+  /* Sidebar + content stack */
+  .flex.min-h-screen {
+    flex-direction: column;
+  }
+
+  /* Project cards → 1 column */
+  .grid.grid-cols-1.sm\:grid-cols-2.md\:grid-cols-3.lg\:grid-cols-4 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Reduce padding */
+  .p-6,
+  .md\:p-8 {
+    padding: 1rem !important;
+  }
+
+  /* Project card height */
+  .max-h-40 {
+    max-height: 8rem !important;
+  }
+
+  /* Modal full width */
+  .fixed.inset-0 .max-w-md {
+    max-width: 95% !important;
+  }
+}
+
+/* ============================= */
+/* 📱 TABLET (641px – 1024px) */
+/* ============================= */
+@media (min-width: 641px) and (max-width: 1024px) {
+  /* 2 project cards per row */
+  .grid.grid-cols-1.sm\:grid-cols-2.md\:grid-cols-3.lg\:grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Slightly compact padding */
+  .p-6,
+  .md\:p-8 {
+    padding: 1.5rem !important;
+  }
+
+  /* Sidebar stays visible */
+  .flex.min-h-screen {
+    flex-direction: row;
+  }
+}
+
+/* ============================= */
+/* 💻 LAPTOP (1025px+) */
+/* ============================= */
+@media (min-width: 1025px) {
+  /* Default grid restored */
+  .grid.grid-cols-1.sm\:grid-cols-2.md\:grid-cols-3.lg\:grid-cols-4 {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}

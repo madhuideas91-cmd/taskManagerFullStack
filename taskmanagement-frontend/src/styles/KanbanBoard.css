@@ -1,0 +1,118 @@
+/* ===============================
+   KANBAN RESPONSIVE STYLES
+   =============================== */
+
+/* Default (Desktop / Laptop) */
+@media (min-width: 1024px) {
+  .kanban-container {
+    flex-direction: row;
+  }
+
+  .kanban-column {
+    min-width: 280px;
+    max-width: 320px;
+  }
+}
+
+/* Tablets */
+@media (max-width: 1023px) {
+  .kanban-container {
+    flex-direction: row;
+    gap: 12px;
+    padding: 8px;
+  }
+
+  .kanban-column {
+    min-width: 240px;
+    max-width: 260px;
+  }
+
+  .kanban-column-title {
+    font-size: 16px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .kanban-container {
+    flex-direction: column;   /* 🔥 Stack columns */
+    overflow-x: hidden;
+    padding: 6px;
+  }
+
+  .kanban-column {
+    min-width: 100%;
+    max-width: 100%;
+    max-height: none;
+  }
+
+  .kanban-column-title {
+    font-size: 15px;
+    text-align: center;
+  }
+
+  .kanban-task {
+    margin-bottom: 10px;
+  }
+
+  /* Improve touch dragging */
+  .kanban-task {
+    touch-action: manipulation;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .kanban-column-title {
+    font-size: 14px;
+  }
+
+  .kanban-column {
+    padding: 8px;
+  }
+}
+
+
+/* Kanban container: flex and fill available width */
+.kanban-container {
+  display: flex;
+  gap: 1rem;           /* space between columns */
+  flex-wrap: wrap;      /* allow columns to wrap on small screens */
+  width: 100%;
+  justify-content: space-between; /* spread columns across width */
+}
+
+/* Columns: responsive and fill available space */
+.kanban-column {
+  flex: 1 1 0;        /* grow & shrink equally, min-width 0 */
+  min-width: 250px;    /* prevent getting too small on mobile */
+  max-width: 32%;      /* roughly 3 columns on desktop */
+  padding: 1rem;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Column title */
+.kanban-column-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid #d1d5db;
+  padding-bottom: 0.5rem;
+}
+
+/* Tasks: fill column width */
+.kanban-task {
+  width: 100%;
+  min-height: 80px;
+  margin-bottom: 1rem;
+}
+
+/* Make text wrap nicely inside task cards */
+.kanban-task div {
+  white-space: normal;
+  word-break: break-word;
+}
