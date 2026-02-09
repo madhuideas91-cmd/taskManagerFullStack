@@ -1,0 +1,96 @@
+{
+  "info": {
+    "_postman_id": "task-service-collection",
+    "name": "Task Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Task",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"New Task\",\n    \"status\": \"todo\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8082/tasks/createTask",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8082",
+          "path": ["tasks", "createTask"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Tasks",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8082/tasks/getAllTasks",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8082",
+          "path": ["tasks", "getAllTasks"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Task by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8082/tasks/getTaskById/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8082",
+          "path": ["tasks", "getTaskById", "1"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Task by ID",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Updated Task\",\n    \"status\": \"inprogress\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8082/tasks/updateTaskById/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8082",
+          "path": ["tasks", "updateTaskById", "1"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Task by ID",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8082/tasks/deleteTaskById/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8082",
+          "path": ["tasks", "deleteTaskById", "1"]
+        }
+      },
+      "response": []
+    }
+  ]
+}

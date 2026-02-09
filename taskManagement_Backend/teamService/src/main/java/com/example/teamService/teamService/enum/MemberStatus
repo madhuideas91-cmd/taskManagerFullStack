@@ -1,0 +1,6 @@
+package com.example.teamService.teamService.enum;
+
+public enum MemberStatus {
+    INVITED,
+    ACTIVE
+}

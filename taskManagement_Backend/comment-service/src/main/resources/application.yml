@@ -1,0 +1,40 @@
+server:
+  port: 8084
+  address: 0.0.0.0
+
+spring:
+  application:
+    name: comment-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/comment_service_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+jwt:
+  secret: your_secret_key_change_this_your_secret_key_change_this
+  expiration-ms: 86400000 # 24 hours
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka:8761/eureka/
+#       defaultZone: http://localhost:8761/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: always

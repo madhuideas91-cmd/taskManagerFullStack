@@ -1,0 +1,328 @@
+version: "3.9"
+
+services:
+  frontend:
+    build: ./taskmanagement-frontend
+    container_name: frontend
+    ports:
+     - "6000:6000"
+    networks:
+     - backend-network
+  # ==========================
+  # Eureka Server
+  # ==========================
+  eureka-server:
+    build:
+      context: ./taskManagement_Backend/eureka_Registry
+    container_name: eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8761/actuator/health || exit 1"]
+      interval: 10s
+      retries: 10
+      start_period: 20s
+
+  # ==========================
+  # API Gateway
+  # ==========================
+  api-gateway:
+    build: ./taskManagement_Backend/api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - backend-network
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      retries: 5
+
+  # ==========================
+  # User Service + MySQL
+  # ==========================
+  mysql-user:
+    image: mysql:8
+    container_name: mysql-user
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: user_ServiceDB
+    ports:
+      - "3306:3306"
+    volumes:
+      - user-db-data:/var/lib/mysql
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -ppassword || exit 1"]
+      interval: 10s
+      retries: 5
+
+  user-service:
+    build: ./taskManagement_Backend/user-service
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      mysql-user:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8081/actuator/health || exit 1"]
+      interval: 5s
+      retries: 12
+
+  # ==========================
+  # Task Service + MySQL
+  # ==========================
+  mysql-task:
+    image: mysql:8
+    container_name: mysql-task
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: task_serviceDB
+    ports:
+      - "33062:3306"
+    volumes:
+      - task-db-data:/var/lib/mysql
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -ppassword || exit 1"]
+      interval: 10s
+      retries: 5
+
+  task-service:
+    build: ./taskManagement_Backend/task-service
+    container_name: task-service
+    ports:
+      - "8082:8082"
+    depends_on:
+        - eureka-server
+        - mysql-task
+        - kafka
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8082/actuator/health || exit 1"]
+      interval: 5s
+      retries: 12
+
+  # ==========================
+  # Zookeeper + Kafka
+  # ==========================
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.1
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "echo ruok | nc localhost 2181 || exit 1"]
+      interval: 10s
+      retries: 5
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: kafka
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "29092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - backend-network
+
+  # ==========================
+  # Notification Service + MySQL
+  # ==========================
+  mysql-notification:
+    image: mysql:8
+    container_name: mysql-notification
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: notification_servicedb
+    ports:
+      - "33063:3306"
+    volumes:
+      - notification-db-data:/var/lib/mysql
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -ppassword || exit 1"]
+      interval: 10s
+      retries: 5
+
+  notification-service:
+    build: ./taskManagement_Backend/notification-service
+    container_name: notification-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - eureka-server
+      - mysql-notification
+      - kafka
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8083/actuator/health || exit 1"]
+      interval: 5s
+      retries: 12
+
+  # ==========================
+  # Comment Service + MySQL
+  # ==========================
+  mysql-comment:
+    image: mysql:8
+    container_name: mysql-comment
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: comment_service_db
+    ports:
+      - "33064:3306"
+    volumes:
+      - comment-db-data:/var/lib/mysql
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -ppassword || exit 1"]
+      interval: 10s
+      retries: 5
+
+  comment-service:
+    build: ./taskManagement_Backend/comment-service
+    container_name: comment-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - eureka-server
+      - mysql-comment
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8084/actuator/health || exit 1"]
+      interval: 5s
+      retries: 12
+
+  # ==========================
+  # Project Service + MySQL
+  # ==========================
+  mysql-project:
+    image: mysql:8
+    container_name: mysql-project
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: project_ServiceDB
+    ports:
+      - "33065:3306"
+    volumes:
+      - project-db-data:/var/lib/mysql
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -ppassword || exit 1"]
+      interval: 10s
+      retries: 5
+
+  project-service:
+    build: ./taskManagement_Backend/project-service
+    container_name: project-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      - eureka-server
+      - mysql-project
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8085/actuator/health || exit 1"]
+      interval: 5s
+      retries: 12
+
+  # ==========================
+  # Team Service + MySQL
+  # ==========================
+  mysql-team:
+    image: mysql:8
+    container_name: mysql-team
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: team_service_db
+    ports:
+      - "33066:3306"
+    volumes:
+      - team-db-data:/var/lib/mysql
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -ppassword || exit 1"]
+      interval: 10s
+      retries: 5
+
+  team-service:
+    build: ./taskManagement_Backend/teamService
+    container_name: team-service
+    ports:
+      - "8086:8086"
+    depends_on:
+      - eureka-server
+      - mysql-team
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8086/actuator/health || exit 1"]
+      interval: 5s
+      retries: 12
+
+# ==========================
+# Networks & Volumes
+# ==========================
+networks:
+  backend-network:
+    driver: bridge
+
+volumes:
+  user-db-data:
+  task-db-data:
+  notification-db-data:
+  comment-db-data:
+  project-db-data:
+  team-db-data:

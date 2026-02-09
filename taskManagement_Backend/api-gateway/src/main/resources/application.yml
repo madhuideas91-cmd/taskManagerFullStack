@@ -1,0 +1,82 @@
+
+spring:
+  application:
+    name: api-gateway
+
+
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:3000"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH   # 🔥 REQUIRED
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/auth/**
+
+        - id: task-service
+          uri: lb://task-service
+          predicates:
+            - Path=/tasks/**
+
+        - id: comment-service
+          uri: lb://comment-service
+          predicates:
+            - Path=/api/comments/**
+
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/notifications/**
+
+        - id: project-service
+          uri: lb://project-service
+          predicates:
+            - Path=/projects/**
+
+#        - id: team-service
+#          uri: lb://TEAMSERVICE
+        - id: team-service
+          uri: lb://team-service
+          predicates:
+            - Path=/api/teams/**
+
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+       defaultZone: http://localhost:8761/eureka/
+#       defaultZone: http://eureka:8761/eureka/
+#      defaultZone: http://eureka-registry:8761/eureka/
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: always
+
+

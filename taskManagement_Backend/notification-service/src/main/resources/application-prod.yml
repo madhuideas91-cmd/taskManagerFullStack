@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:mysql://mysql-notification:3306/notification_servicedb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: password
