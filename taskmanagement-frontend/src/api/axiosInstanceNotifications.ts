@@ -3,12 +3,12 @@ import axios from "axios";
 
 // Axios instance for notifications microservice
 const axiosNotifInstance = axios.create({
-  baseURL: "http://localhost:8080", // ✅ notifications backend
+  baseURL: "http://77.37.47.79:8080", // ✅ notifications backend
   withCredentials: true,
   timeout: 10000
   // if backend uses cookies
- // baseURL: "/api/notifications",
- //baseURL: process.env.REACT_APP_API_URL || "/api",
+  // baseURL: "/api/notifications",
+  //baseURL: process.env.REACT_APP_API_URL || "/api",
 
 });
 

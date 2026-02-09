@@ -7,7 +7,7 @@ export interface Project {
 }
 
 export const getAllProjects = async (): Promise<Project[]> => {
-  const res = await axiosInstance.get<Project[]>("http://localhost:8080/projects/getAllProjects");
+  const res = await axiosInstance.get<Project[]>("http://77.37.47.79:8080/projects/getAllProjects");
   //const res = await axiosInstance.get<Project[]>("/api/projects/getAllProjects");
   //const res = await axiosInstance.get<Project[]>("/projects/getAllProjects");
   return res.data;

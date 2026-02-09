@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const TEAM_API = "http://localhost:8080/api/teams";
+const TEAM_API = "http://77.37.47.79:8080/api/teams";
 //const TEAM_API = "/api/teams";
 
 export interface Team {
