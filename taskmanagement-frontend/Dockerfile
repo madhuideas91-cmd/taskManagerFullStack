@@ -21,5 +21,5 @@ RUN npm install -g serve
 # CRA outputs "build", not "dist"
 COPY --from=build /app/build ./build
 
-EXPOSE 6000
-CMD ["serve", "-s", "build", "-l", "6000"]
+EXPOSE 7010
+CMD ["serve", "-s", "build", "-l", "7010"]
