@@ -5,7 +5,7 @@ services:
     build: ./taskmanagement-frontend
     container_name: frontend
     ports:
-     - "6000:6000"
+     - "7010:7010"
     networks:
      - backend-network
   # ==========================
